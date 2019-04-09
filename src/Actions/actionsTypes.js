@@ -6,3 +6,6 @@ export const FETCH_DATA_SUCCESS =
 
 export const FETCH_DATA_FAILURE =
     "FETCH_PAGES_FAILURE";
+
+export const ADD_NEW_DATA =
+    'ADD_NEW_DATA';

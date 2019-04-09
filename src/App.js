@@ -4,14 +4,17 @@ import {fetchData} from './Actions/AllCity';
 import Grid from '@material-ui/core/Grid';
 import {APP_STATES} from "./config";
 import PropTypes from 'prop-types';
+import {addChoosenCity} from './Actions';
 import ReactAutocomplete from "react-autocomplete";
+import Button from './Components/Button';
 import './Styles/index.scss';
 
 class App extends Component {
 
     state = {
         pageState: APP_STATES.INIT,
-        value: ''
+        cityName: '',
+        choosenCityId: 0,
     };
 
     componentDidMount() {
@@ -45,11 +48,26 @@ class App extends Component {
         }
     }
 
+    addNewCity = () => {
+        for (let city of this.props.cityList) {
+            if (this.state.cityName === city.name) {
+                this.setState({
+                    choosenCityId: city.id,
+                    cityName: '',
+                });
+                this.props.dispatch(addChoosenCity({
+                    id: city.id,
+                    name: city.name
+                }))
+            }
+        }
+    };
+
     render() {
 
         const {
             pageState,
-            value
+            cityName
         } = this.state;
 
         return (
@@ -78,10 +96,10 @@ class App extends Component {
                                     items={this.props.cityList}
                                     shouldItemRender={(item, value) => item.name.toLowerCase().indexOf(value.toLowerCase()) > -1}
                                     getItemValue={item => item.name}
-                                    open={(this.state.value.length >= 1)}
                                     inputProps={{
                                         placeholder: 'City Name',
-                                        type: 'text'
+                                        type: 'text',
+                                        id: 'autocompleteInput'
                                     }}
                                     renderItem={(item, highlighted) =>
                                         <div
@@ -95,9 +113,18 @@ class App extends Component {
                                             {item.name}
                                         </div>
                                     }
-                                    value={value}
-                                    onChange={e => this.setState({value: e.target.value})}
-                                    onSelect={value => this.setState({value})}
+                                    value={cityName}
+                                    onChange={e => this.setState({
+                                        cityName: e.target.value,
+                                    })}
+                                    onSelect={value => {
+                                        this.setState({cityName: value});
+                                    }}
+                                />
+                                <Button
+                                    action={this.addNewCity}
+                                    buttonClassName='auto__complete__button'
+                                    textButton='Add'
                                 />
                             </div>
                         }
@@ -116,6 +143,7 @@ class App extends Component {
 
 const mapStateToProps = state => ({
     cityList: state.data,
+    choosenCityId: state.choosenCities,
     loading: state.loading,
     error: state.error,
 });

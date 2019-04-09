@@ -2,11 +2,13 @@ import {
     FETCH_DATA_BEGIN,
     FETCH_DATA_SUCCESS,
     FETCH_DATA_FAILURE,
+    ADD_NEW_DATA
 } from "../Actions/actionsTypes";
 
 
 const initialState = {
     data: [],
+    choosenCities: [],
     loading: true,
     error: null,
 };
@@ -29,7 +31,12 @@ export function rootReducer(
                 loading: false,
                 data: action.payload.data,
             };
-
+        case ADD_NEW_DATA:
+            return  {
+                ...state,
+                loading: false,
+                choosenCities: [...state.choosenCities,action.payload.data]
+            };
         case FETCH_DATA_FAILURE:
             return {
                 ...state,
@@ -41,3 +48,5 @@ export function rootReducer(
             return state;
     }
 }
+
+
