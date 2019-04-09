@@ -1,0 +1,58 @@
+$font: 'Roboto', sans-serif;
+
+//default styles
+
+html {
+  font-family: $font;
+  letter-spacing: 2px;
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+body {
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: $font;
+  line-height: 1.6;
+  font-weight: 600;
+  width: 100%;
+}
+
+h1 {
+  font-size: 2.3rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.7rem;
+}
+
+h4 {
+  font-size: 1.4rem;
+}
+
+//mixins
+
+@mixin displayFlex($align,$justify,$wrap) {
+  display: flex;
+  align-items: $align;
+  justify-content: $justify;
+  flex-wrap: $wrap;
+  @content;
+}
+
+//colors
+$c-header: #5ac39c;
+
+//min-heights
+$mh-header: 60px;
+
+//breakpoints
+$breakpoint-lg: 1200px;
+$breakpoint-md: 768px;
+$breakpoing-sm: 560px;

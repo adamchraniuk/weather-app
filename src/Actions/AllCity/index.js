@@ -3,7 +3,10 @@ import {
     fetchDataSuccess,
     fetchDataFailure
 } from '../index';
-import {APP_HEADERS_GET} from '../config';
+import {
+    APP_HEADERS_GET,
+    APP_AUTH
+} from '../config';
 
 export function fetchData() {
     return dispatch => {
@@ -11,7 +14,7 @@ export function fetchData() {
         return fetch(APP_HEADERS_GET.cityList, {
             method: 'GET',
             headers: {
-                "authorization": "Bearer ba721f9895d5cebe18697546d08580b3bd7faee8",
+                "authorization": APP_AUTH,
             }
         })
             .then(response => {
@@ -21,7 +24,8 @@ export function fetchData() {
                     throw new Error('Error!');
                 }
             })
-            .then((response) => dispatch(fetchDataSuccess({cityList: response})))
+            .then(response => response.sort((a, b) => a.name.localeCompare(b.name)))
+            .then((response) => dispatch(fetchDataSuccess(response)))
             .catch(error => {
                 dispatch(fetchDataFailure(error));
             });

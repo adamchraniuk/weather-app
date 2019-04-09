@@ -11,7 +11,7 @@ const initialState = {
     error: null,
 };
 
-export function dataReducer(
+export function rootReducer(
     state = initialState,
     action
 ) {
