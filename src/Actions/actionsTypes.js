@@ -7,5 +7,11 @@ export const FETCH_DATA_SUCCESS =
 export const FETCH_DATA_FAILURE =
     "FETCH_PAGES_FAILURE";
 
-export const ADD_NEW_DATA =
-    'ADD_NEW_DATA';
+export const ADD_NEW_CHOOSEN_CITY =
+    'ADD_NEW_CHOOSEN_CITY';
+
+export const REMOVE_CHOOSEN_CITY =
+    'REMOVE_CHOOSEN_CITY';
+
+export const UPDATE_WEATHER =
+    'UPDATE_WEATHER';

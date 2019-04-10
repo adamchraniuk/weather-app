@@ -34,10 +34,18 @@ main {
   text-align: center;
 }
 
+.bg_red {
+  background-color: red;
+}
+.bg_green {
+  background-color: green;
+}
+.color-white {
+  color: white;
+}
 
 .text-input {
   position: relative;
-  margin-top: 50px;
   display: flex;
 
   input[type="text"] {
@@ -70,3 +78,10 @@ main {
 }
 
 
+#autocompleteInput + div {
+  z-index: 100;
+}
+
+.input__container {
+  @include displayFlex(center, center, wrap);
+}

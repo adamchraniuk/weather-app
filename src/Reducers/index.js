@@ -2,7 +2,9 @@ import {
     FETCH_DATA_BEGIN,
     FETCH_DATA_SUCCESS,
     FETCH_DATA_FAILURE,
-    ADD_NEW_DATA
+    ADD_NEW_CHOOSEN_CITY,
+    REMOVE_CHOOSEN_CITY,
+    UPDATE_WEATHER
 } from "../Actions/actionsTypes";
 
 
@@ -31,11 +33,23 @@ export function rootReducer(
                 loading: false,
                 data: action.payload.data,
             };
-        case ADD_NEW_DATA:
-            return  {
+        case ADD_NEW_CHOOSEN_CITY:
+            return {
                 ...state,
                 loading: false,
-                choosenCities: [...state.choosenCities,action.payload.data]
+                choosenCities: [...state.choosenCities, action.payload.data]
+            };
+        case UPDATE_WEATHER:
+            return {
+                ...state,
+                loading: false,
+                choosenCities: action.payload.data
+            };
+        case REMOVE_CHOOSEN_CITY:
+            return {
+                ...state,
+                loading: false,
+                choosenCities: action.payload,
             };
         case FETCH_DATA_FAILURE:
             return {

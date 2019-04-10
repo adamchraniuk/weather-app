@@ -1,12 +1,17 @@
 import React, {Component, Fragment} from 'react';
 import connect from "react-redux/es/connect/connect";
+import {APP_AUTH, APP_HEADERS_GET} from './Actions/config';
 import {fetchData} from './Actions/AllCity';
-import Grid from '@material-ui/core/Grid';
 import {APP_STATES} from "./config";
 import PropTypes from 'prop-types';
-import {addChoosenCity} from './Actions';
 import ReactAutocomplete from "react-autocomplete";
 import Button from './Components/Button';
+import Cities from './Components/Cities';
+import {
+    addChoosenCity,
+    removeChoosenCity,
+    updateCityWeather
+} from './Actions';
 import './Styles/index.scss';
 
 class App extends Component {
@@ -18,10 +23,16 @@ class App extends Component {
     };
 
     componentDidMount() {
-        this.props.dispatch(fetchData());
-        this.setState({
-            pageState: APP_STATES.LOADING
-        })
+        if (this.props.cityList.length === 0) {
+            this.props.dispatch(fetchData());
+            this.setState({
+                pageState: APP_STATES.LOADING
+            });
+        } else {
+            this.setState({
+                pageState: APP_STATES.RESULTS
+            });
+        }
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -55,20 +66,79 @@ class App extends Component {
                     choosenCityId: city.id,
                     cityName: '',
                 });
-                this.props.dispatch(addChoosenCity({
-                    id: city.id,
-                    name: city.name
-                }))
+                fetch(APP_HEADERS_GET.weather + city.id, {
+                    method: 'GET',
+                    headers: {
+                        "authorization": APP_AUTH,
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Error!');
+                    }
+                }).then((response) => {
+                    this.props.dispatch(addChoosenCity({
+                        id: city.id,
+                        name: city.name,
+                        weather: response
+                    }))
+                }).catch(error => error)
             }
         }
     };
 
-    render() {
+    removeOneCityFromWatchlist = (id) => {
+        const {
+            choosenCityArray,
+            dispatch
+        } = this.props;
+        const newChoosenCityArray = choosenCityArray.filter((element, index) => {
+            return choosenCityArray[index].id !== id
+        });
+        dispatch(removeChoosenCity(newChoosenCityArray))
+    };
 
+    refreshCityWeather = (cityObject) => {
+        const {
+            choosenCityArray,
+            dispatch
+        } = this.props;
+        fetch(APP_HEADERS_GET.weather + cityObject.id, {
+            method: 'GET',
+            headers: {
+                "authorization": APP_AUTH,
+            }
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Error!');
+            }
+        }).then((response) => {
+            cityObject.weather = response;
+            dispatch(updateCityWeather(choosenCityArray))
+        }).catch(error => error)
+        
+        // const test = {
+        //     cloudPercentage: 'abc',
+        //     rainAmount: 'abc',
+        //     temperature: 'cda'
+        // };
+
+    };
+
+    render() {
         const {
             pageState,
             cityName
         } = this.state;
+
+        const {
+            error,
+            cityList,
+            choosenCityArray
+        } = this.props;
 
         return (
             <Fragment>
@@ -77,23 +147,22 @@ class App extends Component {
                         Weather app.
                     </h1>
                 </header>
-                <main>
-                    <Grid
-                        container={true}
-                        alignContent={'center'}
-                        justify={'center'}
-                    >
-                        {
-                            pageState === APP_STATES.LOADING &&
-                            <h2 className='text-center'>
-                                App is loading, please wait.
-                            </h2>
-                        }
-                        {
-                            pageState === APP_STATES.RESULTS &&
+                {
+                    pageState === APP_STATES.LOADING &&
+                    <h2 className='text-center'>
+                        App is loading, please wait.
+                    </h2>
+                }
+                {
+                    pageState === APP_STATES.RESULTS &&
+                    <main>
+                        <h2 className='text-center'>
+                            Choose a new city and add to watchlist.
+                        </h2>
+                        <div className='input__container'>
                             <div className='add__city text-input'>
                                 <ReactAutocomplete
-                                    items={this.props.cityList}
+                                    items={cityList}
                                     shouldItemRender={(item, value) => item.name.toLowerCase().indexOf(value.toLowerCase()) > -1}
                                     getItemValue={item => item.name}
                                     inputProps={{
@@ -106,8 +175,8 @@ class App extends Component {
                                             className='auto__complete__menu'
                                             key={item.id}
                                             style={{
-                                                backgroundColor: highlighted ? '#fff1bc' : 'transparent',
-                                                cursor: 'pointer'
+                                                backgroundColor: highlighted ? '#fff1bc' : 'white',
+                                                cursor: 'pointer',
                                             }}
                                         >
                                             {item.name}
@@ -127,15 +196,27 @@ class App extends Component {
                                     textButton='Add'
                                 />
                             </div>
-                        }
-                        {
-                            pageState === APP_STATES.ERROR &&
-                            <h2>
-                                {this.props.error.message}
+                        </div>
+                        {choosenCityArray.length > 0 &&
+                        <div className="cities">
+                            <h2 className='text-center'>
+                                List of observed cities.
                             </h2>
+                            <Cities
+                                deleteFromListFunction={this.removeOneCityFromWatchlist}
+                                refreshWeather={this.refreshCityWeather}
+                                citiesArray={choosenCityArray}
+                            />
+                        </div>
                         }
-                    </Grid>
-                </main>
+                    </main>
+                }
+                {
+                    pageState === APP_STATES.ERROR &&
+                    <h2>
+                        {error.message}
+                    </h2>
+                }
             </Fragment>
         );
     }
@@ -143,17 +224,19 @@ class App extends Component {
 
 const mapStateToProps = state => ({
     cityList: state.data,
-    choosenCityId: state.choosenCities,
+    choosenCityArray: state.choosenCities,
     loading: state.loading,
     error: state.error,
 });
 
 App.propTypes = {
-    cityList: PropTypes.array
+    cityList: PropTypes.array,
+    choosenCityArray: PropTypes.array
 };
 
 App.defaultProps = {
-    cityList: [{id: 776069, name: "Bialystok"}]
+    cityList: [],
+    choosenCityArray: [],
 };
 
 
