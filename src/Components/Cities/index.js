@@ -1,12 +1,13 @@
-import React, {Fragment} from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
+import Weather from './weather';
 import Button from '../Button';
 import './index.scss';
 
 const Cities = ({
                     citiesArray,
                     deleteFromListFunction,
-                    refreshWeather,
+                    refreshWeatherFunction,
                 }) => (
     <div className="cities__list">
         {
@@ -14,27 +15,23 @@ const Cities = ({
                 <div key={city.id}
                      className="cities__single__city">
                     <div className='cities__single__city__inner'>
-                        <div className="cities__single__city_weather">
-                            {city.weather &&
-                            <Fragment>
-                                <p>Cloud percentage: {city.weather.cloudPercentage}</p>
-                                <p>Rain amount: {city.weather.rainAmount}</p>
-                                <p>Temperature: {city.weather.temperature}</p>
-                            </Fragment>
-                            }
-                        </div>
-                        <h3 className='text-center'>
+                        <h4>
                             {city.name}
-                        </h3>
+                        </h4>
+                        {city.weather &&
+                        <div className="cities__single__city_weather">
+                            <Weather weather={city.weather}/>
+                        </div>
+                        }
                         <div className="sigle__city_button">
                             <Button
                                 action={() => deleteFromListFunction(city.id)}
-                                textButton="Delete"
+                                iconClass="fas fa-minus-circle"
                                 buttonClassName='bg_red'>
                             </Button>
                             <Button
-                                action={() => refreshWeather(city)}
-                                textButton="Refresh"
+                                action={() => refreshWeatherFunction(city)}
+                                iconClass="fas fa-sync-alt"
                                 buttonClassName='bg_green'>
                             </Button>
                         </div>
@@ -48,12 +45,12 @@ const Cities = ({
 
 Cities.propTypes = {
     citiesArray: PropTypes.array.isRequired,
-    refreshWeather: PropTypes.func,
+    refreshWeatherFunction: PropTypes.func,
     deleteFromListFunction: PropTypes.func,
 };
 
 Cities.defaultProps = {
-    refreshWeather: () => {
+    refreshWeatherFunction: () => {
     },
     deleteFromListFunction: () => {
     }

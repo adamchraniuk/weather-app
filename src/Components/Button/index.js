@@ -5,12 +5,12 @@ import './index.scss';
 const Button = ({
                     buttonClassName,
                     action,
-                    textButton
+                    iconClass
                 }) => (
     <button
         className={buttonClassName}
         onClick={() => action()}>
-        {textButton}
+        <i className={iconClass}/>
     </button>
 );
 
@@ -23,7 +23,7 @@ Button.propTypes = {
 
 Button.defaultProps = {
     buttonClassName: 'default__button',
-    textButton: 'Button'
+    iconClass: 'fas fa-plus-circle'
 };
 
 

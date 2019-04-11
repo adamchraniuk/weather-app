@@ -1,5 +1,7 @@
 @import './_variables.scss';
-
+body {
+  background-color: rgba(lightblue, .1);
+}
 header {
   min-height: $mh-header;
   background-color: $c-header;
@@ -11,11 +13,31 @@ header {
   }
 }
 
+footer {
+  text-align: right;
+  min-height: 45px;
+  background-color: rgba(orange, .7);
+  @include displayFlex(center, flex-end, wrap);
+
+  a {
+    font-size: .8rem;
+    padding-right: 30px;
+    text-decoration: none;
+    color: white;
+    transition: color .2s ease-in;
+
+    &:hover {
+      color: black;
+    }
+  }
+}
+
 $breakpoint-lg: 1200px;
 $breakpoint-md: 768px;
 $breakpoint-sm: 560px;
 
 main {
+
   @media screen and (min-width: $breakpoint-sm) {
     max-width: 530px;
   }
@@ -26,7 +48,7 @@ main {
     max-width: 1140px;
   }
   padding: 0 15px;
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - 209px);
   margin: 0 auto;
 }
 
@@ -37,9 +59,11 @@ main {
 .bg_red {
   background-color: red;
 }
+
 .bg_green {
   background-color: green;
 }
+
 .color-white {
   color: white;
 }
@@ -54,20 +78,23 @@ main {
     height: 40px;
     box-sizing: border-box;
     outline: none;
-    border: 1px solid lightgray;
+    border: none;
+    border-bottom: 1px solid lightgray;
     border-radius: 3px 0 0 3px;
-    padding: 10px;
+    padding: 10px 10px 10px 15px;
     transition: all 0.1s ease-out;
     font-family: $font;
     font-size: 1rem;
     letter-spacing: 1.2px;
     border-right: none;
+    background-color: transparent;
   }
 
   input[type="text"]:focus {
     padding: 10px;
     transition: all 0.3s ease-out;
     transition-delay: 0.2s;
+    border-color: lightblue;
   }
 }
 
@@ -75,6 +102,7 @@ main {
   font-family: $font;
   font-size: 1rem;
   letter-spacing: 1.2px;
+  color: rgba(black,.8);
 }
 
 

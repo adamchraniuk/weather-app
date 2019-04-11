@@ -3,16 +3,23 @@
 .cities {
   margin: 30px auto;
 
+  h4 {
+    margin: 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid lightgray;
+    text-align: left;
+  }
+
   &__list {
     list-style: none;
     @include displayFlex(flex-start, flex-start, wrap);
   }
 
   &__single__city {
-    flex: 0 0 25%;
+    flex: 0 0 33%;
     padding: 0 15px;
     margin-bottom: 30px;
-    @include displayFlex(stretch, center, wrap);
+    @include displayFlex(center, center, wrap);
 
     &__inner {
       min-height: 200px;
@@ -21,6 +28,7 @@
       height: 100%;
       border-radius: 3px;
       position: relative;
+      padding: 10px 15px;
 
     }
   }
@@ -30,17 +38,32 @@
 .sigle__city_button {
   display: flex;
   width: 100%;
+  justify-content: flex-end;
 
   .bg_red, .bg_green {
     cursor: pointer;
-    width: 50%;
+    width: 40px;
+    height: 39px;
     padding: 5px 10px;
-    margin-left: auto;
+    margin-left: 15px;
     text-align: center;
     border: none;
     color: white;
-    transition: color .2s ease-in;
     font-family: $font;
-    font-size: 1rem;
+    border-radius: 50%;
+    transition: transform .1s ease-in-out;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      font-size: 29px;
+    }
+
+    &:hover {
+      transform: scale(1.1);
+    }
+
   }
 }

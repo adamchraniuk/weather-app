@@ -1,6 +1,9 @@
 import React, {Component, Fragment} from 'react';
 import connect from "react-redux/es/connect/connect";
-import {APP_AUTH, APP_HEADERS_GET} from './Actions/config';
+import {
+    APP_AUTH,
+    APP_HEADERS_GET
+} from './Actions/config';
 import {fetchData} from './Actions/AllCity';
 import {APP_STATES} from "./config";
 import PropTypes from 'prop-types';
@@ -20,7 +23,6 @@ class App extends Component {
     state = {
         pageState: APP_STATES.INIT,
         cityName: '',
-        choosenCityId: 0,
     };
 
     componentDidMount() {
@@ -65,11 +67,9 @@ class App extends Component {
         } = this.props;
 
         for (let city of cityList) {
+
             if (this.state.cityName === city.name) {
-                this.setState({
-                    choosenCityId: city.id,
-                    cityName: '',
-                });
+
                 const checkForDuplicateOfCity = choosenCityArray.find((element, index) => {
                     return choosenCityArray[index].id === city.id
                 });
@@ -91,6 +91,9 @@ class App extends Component {
                             name: city.name,
                             weather: response
                         }));
+                        this.setState({
+                            cityName: '',
+                        });
                     }).catch(error => dispatch(fetchDataFailure(error)))
                 } else {
                     alert('The city is on the watchlist')
@@ -134,7 +137,6 @@ class App extends Component {
             dispatch(updateCityWeather(choosenCityArray));
             this.setState({
                 cityName: '',
-                choosenCityId: cityObject.id,
             })
         }).catch(error => dispatch(fetchDataFailure(error)))
     };
@@ -204,12 +206,12 @@ class App extends Component {
                                     })}
                                     onSelect={value => {
                                         this.setState({cityName: value});
+                                        setTimeout(this.addNewCity, 10)
                                     }}
                                 />
                                 <Button
                                     action={this.addNewCity}
                                     buttonClassName='auto__complete__button'
-                                    textButton='Add'
                                 />
                             </div>
                         </div>
@@ -220,7 +222,7 @@ class App extends Component {
                             </h2>
                             <Cities
                                 deleteFromListFunction={this.removeOneCityFromWatchlist}
-                                refreshWeather={this.refreshCityWeather}
+                                refreshWeatherFunction={this.refreshCityWeather}
                                 citiesArray={choosenCityArray}
                             />
                         </div>
@@ -233,6 +235,14 @@ class App extends Component {
                         {error.message}
                     </h2>
                 }
+                <footer>
+                    <a href="https://github.com/orshid"
+                       target='_blank'
+                       rel="noopener noreferrer"
+                    >
+                        Created by Adam Chraniuk
+                    </a>
+                </footer>
             </Fragment>
         );
     }
