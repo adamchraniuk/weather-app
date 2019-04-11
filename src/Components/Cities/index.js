@@ -38,7 +38,6 @@ const Cities = ({
                                 buttonClassName='bg_green'>
                             </Button>
                         </div>
-
                     </div>
                 </div>
             ))

@@ -29,7 +29,7 @@ export const addChoosenCity = (data) => ({
 export const updateCityWeather = (data) => ({
     type: UPDATE_WEATHER,
     payload: {data}
-})
+});
 
 export const removeChoosenCity = (data) => ({
     type: REMOVE_CHOOSEN_CITY,

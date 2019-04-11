@@ -31,7 +31,7 @@ export function rootReducer(
             return {
                 ...state,
                 loading: false,
-                data: action.payload.data,
+                cityList: action.payload.data,
             };
         case ADD_NEW_CHOOSEN_CITY:
             return {

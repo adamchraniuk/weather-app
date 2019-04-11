@@ -9,6 +9,7 @@ import Button from './Components/Button';
 import Cities from './Components/Cities';
 import {
     addChoosenCity,
+    fetchDataFailure,
     removeChoosenCity,
     updateCityWeather
 } from './Actions';
@@ -23,16 +24,7 @@ class App extends Component {
     };
 
     componentDidMount() {
-        if (this.props.cityList.length === 0) {
-            this.props.dispatch(fetchData());
-            this.setState({
-                pageState: APP_STATES.LOADING
-            });
-        } else {
-            this.setState({
-                pageState: APP_STATES.RESULTS
-            });
-        }
+        this.props.dispatch(fetchData());
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -41,7 +33,6 @@ class App extends Component {
             error,
             cityList
         } = this.props;
-
         if (prevProps.loading !== loading) {
             this.setState({
                 pageState: APP_STATES.LOADING
@@ -59,31 +50,51 @@ class App extends Component {
         }
     }
 
+    componentDidCatch(error, errorInfo) {
+        this.setState({
+            pageState: APP_STATES.ERROR,
+            hasError: true
+        });
+    }
+
     addNewCity = () => {
-        for (let city of this.props.cityList) {
+        const {
+            choosenCityArray,
+            dispatch,
+            cityList
+        } = this.props;
+
+        for (let city of cityList) {
             if (this.state.cityName === city.name) {
                 this.setState({
                     choosenCityId: city.id,
                     cityName: '',
                 });
-                fetch(APP_HEADERS_GET.weather + city.id, {
-                    method: 'GET',
-                    headers: {
-                        "authorization": APP_AUTH,
-                    }
-                }).then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error('Error!');
-                    }
-                }).then((response) => {
-                    this.props.dispatch(addChoosenCity({
-                        id: city.id,
-                        name: city.name,
-                        weather: response
-                    }))
-                }).catch(error => error)
+                const checkForDuplicateOfCity = choosenCityArray.find((element, index) => {
+                    return choosenCityArray[index].id === city.id
+                });
+                if (checkForDuplicateOfCity === undefined) {
+                    fetch(APP_HEADERS_GET.weather + city.id, {
+                        method: 'GET',
+                        headers: {
+                            "authorization": APP_AUTH,
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error('Error!');
+                        }
+                    }).then((response) => {
+                        dispatch(addChoosenCity({
+                            id: city.id,
+                            name: city.name,
+                            weather: response
+                        }));
+                    }).catch(error => dispatch(fetchDataFailure(error)))
+                } else {
+                    alert('The city is on the watchlist')
+                }
             }
         }
     };
@@ -93,17 +104,20 @@ class App extends Component {
             choosenCityArray,
             dispatch
         } = this.props;
+
         const newChoosenCityArray = choosenCityArray.filter((element, index) => {
             return choosenCityArray[index].id !== id
         });
         dispatch(removeChoosenCity(newChoosenCityArray))
     };
 
+
     refreshCityWeather = (cityObject) => {
         const {
             choosenCityArray,
             dispatch
         } = this.props;
+
         fetch(APP_HEADERS_GET.weather + cityObject.id, {
             method: 'GET',
             headers: {
@@ -117,21 +131,19 @@ class App extends Component {
             }
         }).then((response) => {
             cityObject.weather = response;
-            dispatch(updateCityWeather(choosenCityArray))
-        }).catch(error => error)
-        
-        // const test = {
-        //     cloudPercentage: 'abc',
-        //     rainAmount: 'abc',
-        //     temperature: 'cda'
-        // };
-
+            dispatch(updateCityWeather(choosenCityArray));
+            this.setState({
+                cityName: '',
+                choosenCityId: cityObject.id,
+            })
+        }).catch(error => dispatch(fetchDataFailure(error)))
     };
 
     render() {
         const {
             pageState,
-            cityName
+            cityName,
+            hasError
         } = this.state;
 
         const {
@@ -139,6 +151,10 @@ class App extends Component {
             cityList,
             choosenCityArray
         } = this.props;
+
+        if (hasError) {
+            return <h1 className='text-center'>Something went wrong.</h1>;
+        }
 
         return (
             <Fragment>
@@ -213,7 +229,7 @@ class App extends Component {
                 }
                 {
                     pageState === APP_STATES.ERROR &&
-                    <h2>
+                    <h2 className='text-center'>
                         {error.message}
                     </h2>
                 }
@@ -223,7 +239,7 @@ class App extends Component {
 }
 
 const mapStateToProps = state => ({
-    cityList: state.data,
+    cityList: state.cityList,
     choosenCityArray: state.choosenCities,
     loading: state.loading,
     error: state.error,

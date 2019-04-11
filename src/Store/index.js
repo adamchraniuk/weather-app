@@ -10,6 +10,7 @@ import {
 const persistConfig = {
     key: 'root',
     storage,
+    blacklist: ['cityList'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
